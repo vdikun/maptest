@@ -47,6 +47,9 @@ export default class App extends Component<{}> {
     }
     */
 
+    zoom(factor: Number) {
+    }
+
     render() {
         const that = this;
         return (
@@ -60,7 +63,7 @@ export default class App extends Component<{}> {
                         that.map = ref;
                     }}
                 />
-                <ZoomControl/>
+                <ZoomControl zoom={this.zoom}/>
             </View>
         );
     }
