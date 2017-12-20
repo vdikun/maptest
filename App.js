@@ -13,13 +13,7 @@ import {
     Dimensions
 } from 'react-native';
 import MapView from 'react-native-maps';
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+import ZoomControl from './components/ZoomControl.js';
 
 // SF.
 const initialRegion = {
@@ -56,36 +50,31 @@ export default class App extends Component<{}> {
     render() {
         const that = this;
         return (
-            <MapView
-                //region={this.state.region}
-                //onRegionChange={this.onRegionChange.bind(this)}
-                initialRegion={initialRegion}
-                style={{
-                    flex: 1
-                }}
-                ref={ (ref) => {
-                    that.map = ref;
-                }}
-            />
+            <View style={styles.container}>
+                <MapView
+                    //region={this.state.region}
+                    //onRegionChange={this.onRegionChange.bind(this)}
+                    initialRegion={initialRegion}
+                    style={styles.map}
+                    ref={ (ref) => {
+                        that.map = ref;
+                    }}
+                />
+                <ZoomControl/>
+            </View>
         );
     }
 }
 
+const {height, width} = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
+  map: {
+      flex: 1,
+      width: width,
+      height: height
   },
 });
