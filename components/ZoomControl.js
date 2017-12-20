@@ -14,13 +14,13 @@ class ZoomControl extends Component {
             <View style={styles.container}>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => {
-                                      this.props.zoom(1.5);
+                                      this.props.zoom(0.6);
                                   }}>
                     <Text>+</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => {
-                                      this.props.zoom(0.75);
+                                      this.props.zoom(1.667);
                                   }}>
                     <Text>-</Text>
                 </TouchableOpacity>

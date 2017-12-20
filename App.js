@@ -27,27 +27,25 @@ export default class App extends Component<{}> {
     constructor(props) {
         super(props);
 
-        /**
-        this.state= {
-            region: {
-                latitude: 37.78825,
-                longitude: -122.4324,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            }
+        this.state = {
+            region: initialRegion
         }
-         **/
 
         this.map = null;
     }
 
-    /*
     onRegionChange(region) {
         this.setState({ region });
     }
-    */
 
     zoom(factor: Number) {
+        const newRegion = this.state.region;
+        newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
+        newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
+        this.setState({
+            region: newRegion
+        });
+        this.map.animateToRegion(this.state.region, 400);
     }
 
     render() {
@@ -55,15 +53,14 @@ export default class App extends Component<{}> {
         return (
             <View style={styles.container}>
                 <MapView
-                    //region={this.state.region}
-                    //onRegionChange={this.onRegionChange.bind(this)}
+                    onRegionChangeComplete={this.onRegionChange.bind(this)}
                     initialRegion={initialRegion}
                     style={styles.map}
                     ref={ (ref) => {
                         that.map = ref;
                     }}
                 />
-                <ZoomControl zoom={this.zoom}/>
+                <ZoomControl zoom={this.zoom.bind(this)}/>
             </View>
         );
     }
