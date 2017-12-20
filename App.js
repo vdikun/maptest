@@ -33,6 +33,7 @@ export default class App extends Component<{}> {
     constructor(props) {
         super(props);
 
+        /**
         this.state= {
             region: {
                 latitude: 37.78825,
@@ -41,13 +42,19 @@ export default class App extends Component<{}> {
                 longitudeDelta: 0.0421,
             }
         }
+         **/
+
+        this.map = null;
     }
 
+    /*
     onRegionChange(region) {
         this.setState({ region });
     }
+    */
 
     render() {
+        const that = this;
         return (
             <MapView
                 //region={this.state.region}
@@ -55,6 +62,9 @@ export default class App extends Component<{}> {
                 initialRegion={initialRegion}
                 style={{
                     flex: 1
+                }}
+                ref={ (ref) => {
+                    that.map = ref;
                 }}
             />
         );
