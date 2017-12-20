@@ -24,12 +24,15 @@ const initialRegion = {
     longitudeDelta: 0.0421,
 };
 
+const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
+
 export default class App extends Component<{}> {
     constructor(props) {
         super(props);
 
         this.state = {
-            region: initialRegion
+            region: initialRegion,
+            markers: TorontoData.slice(0, 105),
         }
 
         this.map = null;
@@ -49,18 +52,35 @@ export default class App extends Component<{}> {
         this.map.animateToRegion(this.state.region, 400);
     }
 
+    onLoad() {
+        this.map.fitToCoordinates(this.state.markers, {
+            edgePadding: DEFAULT_PADDING,
+            animated: false,
+        });
+    }
+
     render() {
         const that = this;
         return (
             <View style={styles.container}>
                 <MapView
+                    ref={ (ref) => {
+                        if (ref) {
+                            that.map = ref;
+                            that.onLoad();
+                        }
+                    }}
                     onRegionChangeComplete={this.onRegionChange.bind(this)}
                     initialRegion={initialRegion}
                     style={styles.map}
-                    ref={ (ref) => {
-                        that.map = ref;
-                    }}
-                />
+                >
+                    {this.state.markers.map((marker, i) => (
+                        <MapView.Marker
+                            key={i.toString()}
+                            coordinate={marker}
+                        />
+                    ))}
+                </MapView>
                 <ZoomControl zoom={this.zoom.bind(this)}/>
             </View>
         );
