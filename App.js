@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import MapView from 'react-native-maps';
 import ZoomControl from './components/ZoomControl.js';
+import TorontoData from './assets/TorontoData.js';
 
 // SF.
 const initialRegion = {
