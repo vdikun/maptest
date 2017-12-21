@@ -71,11 +71,20 @@ export default class App extends Component<{}> {
 
     markerInView(marker) {
         const region = this.state.region;
-        const maxLat = region.latitude + (0.65 * region.latitudeDelta);
-        const minLat = region.latitude - (0.65 * region.latitudeDelta);
-        const maxLong = region.longitude + (0.65 * region.longitudeDelta);
-        const minLong = region.longitude - (0.65 * region.longitudeDelta);
-        return (marker.latitude.between(maxLat, minLat) && marker.longitude.between(maxLong, minLong));
+        const zoomLevel = this.getZoomLevel(region.latitudeDelta);
+        if (this.filterMarker(marker, zoomLevel)) {
+            const maxLat = region.latitude + (0.65 * region.latitudeDelta);
+            const minLat = region.latitude - (0.65 * region.latitudeDelta);
+            const maxLong = region.longitude + (0.65 * region.longitudeDelta);
+            const minLong = region.longitude - (0.65 * region.longitudeDelta);
+            return (marker.latitude.between(maxLat, minLat) && marker.longitude.between(maxLong, minLong))
+        };
+    }
+
+    filterMarker(marker, zoomLevel) {
+       const submissionId = marker.submissionId;
+       const lastDigit = +(submissionId.split('').pop());
+       return (zoomLevel >= lastDigit);
     }
 
     renderMarkers() {
@@ -90,6 +99,18 @@ export default class App extends Component<{}> {
                 );
             }
         });
+    }
+
+    getZoomLevel(latitudeDelta) {
+        let i = 2 * Math.log2(1 / latitudeDelta);
+        if (i > 9) {
+            i = 9;
+        }
+        if (i < 0) {
+            i = 0;
+        }
+        i = Math.floor(i);
+        return i;
     }
 
     render() {
