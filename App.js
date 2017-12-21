@@ -75,8 +75,8 @@ export default class App extends Component<{}> {
 
     filterMarker(marker, zoomLevel) {
        const submissionId = marker.submissionId;
-       const lastDigit = +(submissionId.split('').pop());
-       return (zoomLevel >= lastDigit);
+       const last2Digits = +(submissionId.slice(-2,-1));
+       return (zoomLevel >= last2Digits);
     }
 
     renderMarkers() {
@@ -94,9 +94,9 @@ export default class App extends Component<{}> {
     }
 
     getZoomLevel(latitudeDelta) {
-        let i = 2 * Math.log2(1 / latitudeDelta);
-        if (i > 9) {
-            i = 9;
+        let i = 4 * Math.log2(1 / latitudeDelta);
+        if (i > 99) {
+            i = 99;
         }
         if (i < 0) {
             i = 0;
@@ -123,6 +123,9 @@ export default class App extends Component<{}> {
                     {this.renderMarkers()}
                 </MapView>
                 <ZoomControl map={this.map} region={this.state.region}/>
+                <Text style={styles.bottomLeftFloat}>
+                    {this.getZoomLevel(this.state.region.latitudeDelta)}
+                </Text>
             </View>
         );
     }
@@ -139,4 +142,11 @@ const styles = StyleSheet.create({
       width: width,
       height: height
   },
+    bottomLeftFloat: {
+        backgroundColor: 'white',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        padding: 12
+    },
 });
