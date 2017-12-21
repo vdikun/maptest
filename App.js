@@ -26,6 +26,12 @@ const initialRegion = {
 
 const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
 
+Number.prototype.between = function(a, b) {
+    var min = Math.min.apply(Math, [a, b]),
+        max = Math.max.apply(Math, [a, b]);
+    return this > min && this < max;
+};
+
 export default class App extends Component<{}> {
     constructor(props) {
         super(props);
@@ -62,6 +68,28 @@ export default class App extends Component<{}> {
             });
         }
     }
+
+    markerInView(marker) {
+        const region = this.state.region;
+        const maxLat = region.latitude + (0.65 * region.latitudeDelta);
+        const minLat = region.latitude - (0.65 * region.latitudeDelta);
+        const maxLong = region.longitude + (0.65 * region.longitudeDelta);
+        const minLong = region.longitude - (0.65 * region.longitudeDelta);
+        return (marker.latitude.between(maxLat, minLat) && marker.longitude.between(maxLong, minLong));
+    }
+
+    renderMarkers() {
+        const that = this;
+        return this.state.markers.map(function(marker, i) {
+            if (that.markerInView(marker)) {
+                return (
+                    <MapView.Marker
+                        key={i.toString()}
+                        coordinate={marker}
+                    />
+                );
+            }
+        });
     }
 
     render() {
@@ -79,12 +107,7 @@ export default class App extends Component<{}> {
                     onLayout={this.onLoad.bind(this)}
                     style={styles.map}
                 >
-                    {this.state.markers.map((marker, i) => (
-                        <MapView.Marker
-                            key={i.toString()}
-                            coordinate={marker}
-                        />
-                    ))}
+                    {this.renderMarkers()}
                 </MapView>
                 <ZoomControl zoom={this.zoom.bind(this)}/>
             </View>
