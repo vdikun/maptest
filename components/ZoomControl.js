@@ -9,18 +9,25 @@ import {
 } from 'react-native';
 
 class ZoomControl extends Component {
+    zoom(factor: Number) {
+        const newRegion = this.props.region;
+        newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
+        newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
+        this.props.map.animateToRegion(newRegion, 400);
+    }
+
     render(): Element {
         return (
             <View style={styles.container}>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => {
-                                      this.props.zoom(0.6);
+                                      this.zoom(0.6);
                                   }}>
                     <Text>+</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => {
-                                      this.props.zoom(1.667);
+                                      this.zoom(1.667);
                                   }}>
                     <Text>-</Text>
                 </TouchableOpacity>

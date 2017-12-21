@@ -49,14 +49,6 @@ export default class App extends Component<{}> {
         this.setState({ region });
     }
 
-    zoom(factor: Number) {
-        const newRegion = this.state.region;
-        newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
-        newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
-        this.setState({
-            region: newRegion
-        });
-        this.map.animateToRegion(this.state.region, 400);
     }
 
     onLoad() {
@@ -130,7 +122,7 @@ export default class App extends Component<{}> {
                 >
                     {this.renderMarkers()}
                 </MapView>
-                <ZoomControl zoom={this.zoom.bind(this)}/>
+                <ZoomControl map={this.map} region={this.state.region}/>
             </View>
         );
     }
