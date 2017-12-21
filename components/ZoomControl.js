@@ -10,7 +10,7 @@ import {
 
 class ZoomControl extends Component {
     zoom(factor: Number) {
-        const newRegion = this.props.region;
+        let newRegion = this.props.region;
         newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
         newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
         this.props.map.animateToRegion(newRegion, 400);
