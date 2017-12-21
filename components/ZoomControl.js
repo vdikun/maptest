@@ -14,6 +14,7 @@ class ZoomControl extends Component {
         newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
         newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
         this.props.map.animateToRegion(newRegion, 400);
+        this.props.callback(newRegion);
     }
 
     render(): Element {
@@ -21,13 +22,13 @@ class ZoomControl extends Component {
             <View style={styles.container}>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => {
-                                      this.zoom(0.6);
+                                      this.zoom(this.props.zoomFactor);
                                   }}>
                     <Text>+</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => {
-                                      this.zoom(1.667);
+                                      this.zoom(1/this.props.zoomFactor);
                                   }}>
                     <Text>-</Text>
                 </TouchableOpacity>

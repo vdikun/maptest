@@ -26,6 +26,8 @@ const initialRegion = {
 
 const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
 
+const ZOOM_FACTOR = 2/3;
+
 Number.prototype.between = function(a, b) {
     var min = Math.min.apply(Math, [a, b]),
         max = Math.max.apply(Math, [a, b]);
@@ -39,14 +41,12 @@ export default class App extends Component<{}> {
         this.state = {
             loaded: false,
             region: initialRegion,
-            markers: TorontoData.slice(0, 1009),
+            markers: TorontoData.slice(0, 109),
+            visibleMarkers: TorontoData.slice(0, 109),
+            zoomLevel: 0
         }
 
         this.map = null;
-    }
-
-    onRegionChange(region) {
-        this.setState({ region });
     }
 
     onLoad() {
@@ -56,19 +56,32 @@ export default class App extends Component<{}> {
                 edgePadding: DEFAULT_PADDING,
                 animated: false,
             });
+            this.setVisibleMarkersAndZoomLevel();
         }
     }
 
-    markerInView(marker) {
-        const region = this.state.region;
-        const zoomLevel = this.getZoomLevel(region.latitudeDelta);
-        if (this.filterMarker(marker, zoomLevel)) {
-            const maxLat = region.latitude + (0.65 * region.latitudeDelta);
-            const minLat = region.latitude - (0.65 * region.latitudeDelta);
-            const maxLong = region.longitude + (0.65 * region.longitudeDelta);
-            const minLong = region.longitude - (0.65 * region.longitudeDelta);
-            return (marker.latitude.between(maxLat, minLat) && marker.longitude.between(maxLong, minLong))
-        };
+    onRegionChange(region) {
+        this.setState({ region });
+    }
+
+    onRegionChangeComplete(region) {
+        this.setState({ region });
+        this.setVisibleMarkersAndZoomLevel();
+    }
+
+    setVisibleMarkersAndZoomLevel() {
+        const zoomLevel = this.getZoomLevel();
+        const visibleMarkers = this.state.markers.filter(
+            marker => this.markerInZoomAndView(marker, this.state.region, zoomLevel)
+        );
+        this.setState({
+            visibleMarkers: visibleMarkers,
+            zoomLevel: zoomLevel
+        });
+    }
+
+    markerInZoomAndView(marker, region, zoomLevel) {
+        return (this.filterMarker(marker, zoomLevel) && this.markerInView(marker, region));
     }
 
     filterMarker(marker, zoomLevel) {
@@ -77,28 +90,30 @@ export default class App extends Component<{}> {
        return (zoomLevel >= last2Digits);
     }
 
+    markerInView(marker, region) {
+        const maxLat = region.latitude + (0.65 * region.latitudeDelta);
+        const minLat = region.latitude - (0.65 * region.latitudeDelta);
+        const maxLong = region.longitude + (0.65 * region.longitudeDelta);
+        const minLong = region.longitude - (0.65 * region.longitudeDelta);
+        return (marker.latitude.between(maxLat, minLat) && marker.longitude.between(maxLong, minLong));
+    }
+
     renderMarkers() {
-        const that = this;
-        return this.state.markers.map(function(marker, i) {
-            if (that.markerInView(marker)) {
-                return (
-                    <MapView.Marker
-                        key={i.toString()}
-                        coordinate={marker}
-                    />
-                );
-            }
+        return this.state.visibleMarkers.map(function(marker, i) {
+            return (
+                <MapView.Marker
+                    key={i.toString()}
+                    coordinate={marker}
+                />
+            );
         });
     }
 
-    getZoomLevel(latitudeDelta) {
-        let i = 3 * (1 / latitudeDelta);
-        if (i > 99) {
-            i = 99;
-        }
-        if (i < 0) {
-            i = 0;
-        }
+    getZoomLevel() {
+        let latitudeDelta = this.state.region.latitudeDelta;
+        let i = 2 * (1 / latitudeDelta);
+        if (i > 99) i = 99;
+        if (i < 0) i = 0;
         i = Math.floor(i);
         return i;
     }
@@ -113,16 +128,19 @@ export default class App extends Component<{}> {
                             that.map = ref;
                         }
                     }}
-                    onRegionChangeComplete={this.onRegionChange.bind(this)}
+                    onRegionChangeComplete={this.onRegionChangeComplete.bind(this)}
                     onRegionChange={this.onRegionChange.bind(this)}
                     onLayout={this.onLoad.bind(this)}
                     style={styles.map}
                 >
                     {this.renderMarkers()}
                 </MapView>
-                <ZoomControl map={this.map} region={this.state.region}/>
+                <ZoomControl map={this.map}
+                             region={this.state.region}
+                             callback={this.setVisibleMarkersAndZoomLevel.bind(this)}
+                             zoomFactor={ZOOM_FACTOR}/>
                 <Text style={styles.bottomLeftFloat}>
-                    {this.getZoomLevel(this.state.region.latitudeDelta)}
+                    {this.state.zoomLevel}
                 </Text>
             </View>
         );
