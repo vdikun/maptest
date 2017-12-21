@@ -31,6 +31,7 @@ export default class App extends Component<{}> {
         super(props);
 
         this.state = {
+            loaded: false,
             region: initialRegion,
             markers: TorontoData.slice(0, 105),
         }
@@ -53,10 +54,14 @@ export default class App extends Component<{}> {
     }
 
     onLoad() {
-        this.map.fitToCoordinates(this.state.markers, {
-            edgePadding: DEFAULT_PADDING,
-            animated: false,
-        });
+        if (!this.state.loaded && this.map) {
+            this.setState({loaded: true});
+            this.map.fitToCoordinates(this.state.markers, {
+                edgePadding: DEFAULT_PADDING,
+                animated: false,
+            });
+        }
+    }
     }
 
     render() {
@@ -67,11 +72,11 @@ export default class App extends Component<{}> {
                     ref={ (ref) => {
                         if (ref) {
                             that.map = ref;
-                            that.onLoad();
                         }
                     }}
                     onRegionChangeComplete={this.onRegionChange.bind(this)}
-                    initialRegion={initialRegion}
+                    onRegionChange={this.onRegionChange.bind(this)}
+                    onLayout={this.onLoad.bind(this)}
                     style={styles.map}
                 >
                     {this.state.markers.map((marker, i) => (
