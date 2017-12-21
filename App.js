@@ -39,7 +39,7 @@ export default class App extends Component<{}> {
         this.state = {
             loaded: false,
             region: initialRegion,
-            markers: TorontoData.slice(0, 105),
+            markers: TorontoData.slice(0, 1009),
         }
 
         this.map = null;
@@ -47,8 +47,6 @@ export default class App extends Component<{}> {
 
     onRegionChange(region) {
         this.setState({ region });
-    }
-
     }
 
     onLoad() {
@@ -75,7 +73,7 @@ export default class App extends Component<{}> {
 
     filterMarker(marker, zoomLevel) {
        const submissionId = marker.submissionId;
-       const last2Digits = +(submissionId.slice(-2,-1));
+       const last2Digits = +(submissionId.slice(-2));
        return (zoomLevel >= last2Digits);
     }
 
@@ -94,7 +92,7 @@ export default class App extends Component<{}> {
     }
 
     getZoomLevel(latitudeDelta) {
-        let i = 4 * Math.log2(1 / latitudeDelta);
+        let i = 3 * (1 / latitudeDelta);
         if (i > 99) {
             i = 99;
         }
