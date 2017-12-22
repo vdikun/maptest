@@ -65,8 +65,9 @@ export default class App extends Component<{}> {
     }
 
     onRegionChangeComplete(region) {
-        this.setState({ region });
-        this.setVisibleMarkersAndZoomLevel();
+        this.setState({ region }, () => {
+            this.setVisibleMarkersAndZoomLevel();
+        });
     }
 
     setVisibleMarkersAndZoomLevel() {
