@@ -1,4 +1,9 @@
 /* @flow */
+/**
+ * This component implements a simple zoom control which consists of rounded buttons containing a + and - respectively
+ * which are displayed overlaying the bottom right hand corner of the parent element. The optional callback prop allows
+ * the component to update its parent where necessary.
+ */
 
 import React, { Component, Element } from 'react';
 import {
@@ -8,12 +13,15 @@ import {
     TouchableOpacity
 } from 'react-native';
 
+// arbitrary value. larger value = slower animation.
+const ANIMATE_TIME = 400;
+
 class ZoomControl extends Component {
     zoom(factor: Number) {
         let newRegion = this.props.region;
         newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
         newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
-        this.props.map.animateToRegion(newRegion, 400);
+        this.props.map.animateToRegion(newRegion, ANIMATE_TIME);
         if (this.props.callback) {
             this.props.callback(newRegion);
         }
