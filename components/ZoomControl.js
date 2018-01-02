@@ -14,7 +14,9 @@ class ZoomControl extends Component {
         newRegion.latitudeDelta = newRegion.latitudeDelta * factor;
         newRegion.longitudeDelta = newRegion.longitudeDelta * factor;
         this.props.map.animateToRegion(newRegion, 400);
-        this.props.callback(newRegion);
+        if (this.props.callback) {
+            this.props.callback(newRegion);
+        }
     }
 
     render(): Element {
